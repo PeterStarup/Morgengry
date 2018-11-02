@@ -53,16 +53,7 @@ namespace Morgengry
 
         public double GetValue()
         {
-            double hours = DurationInMinutes % 60;
-
-            if (hours >= 30)
-            {
-                return (DurationInMinutes / 60 + 1) * CourseHourValue;
-            }
-            else
-            {
-                return (DurationInMinutes / 60) * CourseHourValue;
-            }
+            return (DurationInMinutes + 59) / 60 * CourseHourValue;
         }
     }
 }
