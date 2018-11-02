@@ -3,66 +3,104 @@ using System.Text;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Morgengry;
+using System.IO;
 
 namespace Test
 {
     [TestClass]
-    public class UnitTest2
+    public class UnitTestPersistable
     {
         Book b1, b2, b3;
-        Amulet a11, a12, a13;
-        Course c111, c112;
-        //CourseRepository courses = new CourseRepository();
-        //BookRepository books = new BookRepository();
-        //AmuletRepository amulets = new AmuletRepository();
-        //MerchandiseRepository merchandises = new MerchandiseRepository();
-        ValuableRepository repo = new ValuableRepository();
-
+        Amulet a1, a2, a3;
+        Course c1, c2;
+        ValuableRepository vr1, vr2;
 
         [TestInitialize]
         public void Init()
         {
-            b1 = new Book("1");
-            b2 = new Book("2", "Falling in Love with Yourself");
-            b3 = new Book("3", "Spirits in the Night", 123.55);
-            repo.AddValuable(b1);
-            repo.AddValuable(b2);
-            repo.AddValuable(b3);
+            b1 = new Book("No. B1");
+            b2 = new Book("No. B2", "Falling in Love with Yourself");
+            b3 = new Book("No. B3", "Spirits in the Night", 123.55);
+            a1 = new Amulet("No. A1");
+            a2 = new Amulet("No. A2", Level.high);
+            a3 = new Amulet("No. A3", Level.low, "Modern");
+            c1 = new Course("Basis kursus");
+            c2 = new Course("Kursus 2", 128);
 
-            a11 = new Amulet("11");
-            a12 = new Amulet("12", Level.high);
-            a13 = new Amulet("13", Level.low, "Capricorn");
-            repo.AddValuable(a11);
-            repo.AddValuable(a12);
-            repo.AddValuable(a13);
+            vr1 = new ValuableRepository();
+            vr1.AddValuable(b1);
+            vr1.AddValuable(a1);
+            vr1.AddValuable(b2);
+            vr1.AddValuable(a3);
+            vr1.AddValuable(c1);
+            vr1.AddValuable(b3);
+            vr1.AddValuable(a2);
+            vr1.AddValuable(c2);
 
-            c111 = new Course("Eufori med røg");
-            c112 = new Course("Nuru Massage using Chia Oil", 157);
-            repo.AddValuable(c111);
-            repo.AddValuable(c112);
+            vr2 = new ValuableRepository();
+
+            if (File.Exists("ValuableRepository.txt"))
+            {
+                File.Delete("ValuableRepository.txt");
+            }
+            if (File.Exists("TestFile01.txt"))
+            {
+                File.Delete("TestFile01.txt");
+            }
+            if (File.Exists("TestFile02.txt"))
+            {
+                File.Delete("TestFile02.txt");
+            }
         }
 
         [TestMethod]
-        public void TestGetValueForBook()
+        public void TestSave()
         {
-            Assert.AreEqual(0.0, b1.GetValue());
-            Assert.AreEqual(0.0, b2.GetValue());
-            Assert.AreEqual(123.55, b3.GetValue());
+            vr1.Save("TestFile01.txt");
+            Assert.AreEqual(true, File.Exists("TestFile01.txt"));
         }
 
         [TestMethod]
-        public void TestGetValueForAmulet()
+        public void TestLoadWithFileName()
         {
-            Assert.AreEqual(20.0, a11.GetValue());
-            Assert.AreEqual(27.5, a12.GetValue());
-            Assert.AreEqual(12.5, a13.GetValue());
+            vr1.Save("TestFile01.txt");
+            vr2.Load("TestFile01.txt");
+            int noOfElements = vr1.Count();
+            Assert.AreEqual(noOfElements, vr2.Count());
+            Assert.AreEqual(vr1.GetValuable("No. B2").ToString(), vr2.GetValuable("No. B2").ToString());
+            Assert.AreEqual(vr1.GetValuable("No. B1").ToString(), vr2.GetValuable("No. B1").ToString());
+            Assert.AreEqual(vr1.GetValuable("No. B3").ToString(), vr2.GetValuable("No. B3").ToString());
+
+            Assert.AreEqual(vr1.GetValuable("Basis kursus").ToString(),
+             vr2.GetValuable("Basis kursus").ToString());
+            Assert.AreEqual(vr1.GetValuable("Kursus 2").ToString(), vr2.GetValuable("Kursus 2").ToString());
+
+            Assert.AreEqual(vr1.GetValuable("No. A3").ToString(), vr2.GetValuable("No. A3").ToString());
+            Assert.AreEqual(vr1.GetValuable("No. A1").ToString(), vr2.GetValuable("No. A1").ToString());
+            Assert.AreEqual(vr1.GetValuable("No. A2").ToString(), vr2.GetValuable("No. A2").ToString());
         }
 
+
         [TestMethod]
-        public void TestGetValueForCourse()
+        public void TestLoadWithDefaultFile()
         {
-            Assert.AreEqual(0.0, c111.GetValue());
-            Assert.AreEqual(2475.00, c112.GetValue());
+            vr1.Save();
+            vr2.Load();
+            int noOfElements = vr1.Count();
+            Assert.AreEqual(noOfElements, vr2.Count());
+            Assert.AreEqual(vr1.GetValuable("No. B2").ToString(), vr2.GetValuable("No. B2").ToString());
+            Assert.AreEqual(vr1.GetValuable("No. B1").ToString(), vr2.GetValuable("No. B1").ToString());
+            Assert.AreEqual(vr1.GetValuable("No. B3").ToString(),
+             vr2.GetValuable("No. B3").ToString());
+
+            Assert.AreEqual(vr1.GetValuable("Basis kursus").ToString(),
+             vr2.GetValuable("Basis kursus").ToString());
+            Assert.AreEqual(vr1.GetValuable("Kursus 2").ToString(), vr2.GetValuable("Kursus 2").ToString());
+
+            Assert.AreEqual(vr1.GetValuable("No. A3").ToString(), vr2.GetValuable("No. A3").ToString());
+            Assert.AreEqual(vr1.GetValuable("No. A1").ToString(), vr2.GetValuable("No. A1").ToString());
+            Assert.AreEqual(vr1.GetValuable("No. A2").ToString(), vr2.GetValuable("No. A2").ToString());
         }
     }
 }
+
