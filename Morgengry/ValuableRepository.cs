@@ -85,7 +85,7 @@ namespace Morgengry
                     }
                     else if (valuables[i] is Amulet amulet)
                     {
-                        writer.WriteLine("AMULET;" + amulet.ItemId + ";" + amulet.Quality + ";" + amulet.Design);
+                        writer.WriteLine("AMULET;Id" + amulet.ItemId + ";" + amulet.Quality + ";" + amulet.Design);
                     }
                 }
                 else if (valuables[i] is Course cour)
@@ -123,20 +123,18 @@ namespace Morgengry
         public void Load()
         {
             StreamReader reader = new StreamReader("ValuableRepository.txt");
-            string line; //= reader.ReadLine();
-            //string[] split = line.Split(';');
+            string line;
             Level lvl = Level.low;
-            do
+            while((line = reader.ReadLine()) != null)
             {
-                line = reader.ReadLine();
                 string[] split = line.Split(';');
 
-                if (line.Substring(0, ';') == "BOG")
+                if (split[0] == "BOG")
                 {
-                    Book book = new Book(split[1].Substring(1, ';'), split[2], double.Parse(split[3]));
+                    Book book = new Book(split[1].Substring(2), split[2], double.Parse(split[3]));
                     valuables.Add(book);
                 }
-                else if (line.Substring(0, ';') == "AMULET")
+                else if (split[0] == "AMULET")
                 {
                     switch (split[2])
                     {
@@ -152,35 +150,33 @@ namespace Morgengry
                             lvl = Level.low;
                             break;
                     }
-                    Amulet amulet = new Amulet(split[1].Substring(1, ';'), lvl, split[3]);
+                    Amulet amulet = new Amulet(split[1].Substring(2), lvl, split[3]);
                     valuables.Add(amulet);
                 }
-                else if (line.Substring(0, ';') == "KURSUS")
+                else if (split[0] == "KURSUS")
                 {
                     Course cour = new Course(split[1], int.Parse(split[2]));
                     valuables.Add(cour);
                 }
-            } while (line != null);
+            }
             reader.Close();
         }
 
         public void Load(string filename)
         {
             StreamReader reader = new StreamReader(filename);
-            string line; //= reader.ReadLine();
-            //string[] split = line.Split(';');
+            string line;
             Level lvl = Level.low;
-            do
+            while((line = reader.ReadLine()) != null)
             {
-                line = reader.ReadLine();
                 string[] split = line.Split(';');
 
-                if (line.Substring(0, ';') == "BOG")
+                if (split[0] == "BOG")
                 {
-                    Book book = new Book(split[1].Substring(1, ';'), split[2], double.Parse(split[3]));
+                    Book book = new Book(split[1].Substring(2), split[2], double.Parse(split[3]));
                     valuables.Add(book);
                 }
-                else if (line.Substring(0, ';') == "AMULET")
+                else if (split[0] == "AMULET")
                 {
                     switch (split[2])
                     {
@@ -196,15 +192,15 @@ namespace Morgengry
                             lvl = Level.low;
                             break;
                     }
-                    Amulet amulet = new Amulet(split[1].Substring(1, ';'), lvl, split[3]);
+                    Amulet amulet = new Amulet(split[1].Substring(2), lvl, split[3]);
                     valuables.Add(amulet);
                 }
-                else if (line.Substring(0, ';') == "KURSUS")
+                else if (split[0] == "KURSUS")
                 {
                     Course cour = new Course(split[1], int.Parse(split[2]));
                     valuables.Add(cour);
                 }
-            } while (line != null);
+            }
             reader.Close();
         }
     }
